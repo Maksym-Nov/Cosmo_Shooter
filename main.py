@@ -30,4 +30,4 @@ while game == True:
         window.blit(background, (0, 0))
 
     clock.tick(FPS)
-    pygame.display.update
+    pygame.display.update()
