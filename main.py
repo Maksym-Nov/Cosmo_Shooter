@@ -43,8 +43,15 @@ class Player(GameSprite):
         
     def fire(self):
         pass
+
+class Enemy(GameSprite):
+    def __init__(self, image, x, y, width, height, speed):
+        super().__init__(image, x, y, width, height, speed)
     
-player = Player("images.png", 300, 600, 70, 70, 5)
+
+    
+player = Player("images.png", 300, 400, 70, 70, 5)
+enemy = Enemy("images.jpg", 300, 300, 70, 70, 5)
 
 
 play = True
