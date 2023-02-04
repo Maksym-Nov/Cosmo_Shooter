@@ -70,6 +70,9 @@ while game == True:
 
         player.reset()
         player.update()
+        enemy.update()
+        enemy.reset()
+
 
     clock.tick(FPS)
     pygame.display.update()
