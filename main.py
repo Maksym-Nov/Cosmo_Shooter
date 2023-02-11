@@ -13,6 +13,7 @@ WIN_WIDTH = 700
 WIN_HEIGHT = 500
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+DARK_RED = (255, 150, 150)
 
 window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 clock = pygame.time.Clock()
@@ -39,14 +40,22 @@ class Player(GameSprite):
     
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.rect.left > 0:
             self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.rect.right < WIN_WIDTH:
             self.rect.x += self.speed
-        
     def fire(self):
-        pass
+        bullet = Bullet(file_path("ammo_for_game_IT-removebg-preview.png"), self.rect.centerx, self.rect  .top, 30, 30, 4)
+        bullets.add(bullet)
 
+class Bullet(GameSprite):
+    def __init__(self, images, x, y, width, height, speed):
+        super().__init__(images, x, y, width, height, speed)
+
+    def update(self):
+        self.rect.y -= self.speed
+        if self.rect.bottom <= 0:
+            self.kill()
 class Enemy(GameSprite):
     def __init__(self, image, x, y, width, height, speed):
         super().__init__(image, x, y, width, height, speed)
@@ -60,11 +69,12 @@ class Enemy(GameSprite):
             self.speed = randint(1, 7)
             missed_enemies += 1 
 
-player = Player("images.png", 300, 400, 70, 70, 5)
+player = Player("images-removebg-preview.png", 300, 400, 70, 70, 5)
 enemies = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
 
 for i in range(5):
-    enemy = Enemy(file_path("images.jpg"), randint (0, WIN_WIDTH - 70), 0, 70, 70, randint(1, 5))
+    enemy = Enemy(file_path("images-removebg-preview_.png"), randint (0, WIN_WIDTH - 70), 0, 70, 70, randint(1, 5))
     enemies.add(enemy)
 
 missed_enemies = 0
@@ -81,6 +91,9 @@ while game == True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player.fire()
 
     if play == True:
         window.blit(background, (0, 0))
@@ -96,6 +109,29 @@ while game == True:
         
         enemies.draw(window)
         enemies.update()
+
+        bullets.draw(window)
+        bullets.update()
+
+        collide_bullets = pygame.sprite.groupcollide(enemies, bullets, False, True)
+        if collide_bullets:
+            for enemy in collide_bullets:
+                killed_enemies += 1
+                enemy.rect.bottom = 0
+                enemy. rect.x = randint(0, WIN_WIDTH - enemy.rect.width)
+                enemy.speed = randint(1, 7)
+
+        if missed_enemies >= 10 or pygame.sprite.spritecollide(player, enemies, False):
+            play = False
+            font2 = pygame.font.SysFont("arial", 60, 1)
+            txt_lose = font2.render("YOU LOSE", True, DARK_RED)
+            window.blit(txt_lose, (250, 200))
+
+        if killed_enemies >= 1:
+            play = False
+            font2 = pygame.font.SysFont("arial", 60, 1)
+            txt_win = font2.render("YOU WIN", True, GREEN)
+            window.blit(txt_win, (240, 200))
 
 
     clock.tick(FPS)
