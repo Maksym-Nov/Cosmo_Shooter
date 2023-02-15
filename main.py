@@ -21,6 +21,16 @@ clock = pygame.time.Clock()
 background = pygame.image.load(file_path("завантаження.jpg"))
 background = pygame.transform.scale(background, (WIN_WIDTH, WIN_HEIGHT))
 
+pygame.mixer.music.load(file_path("fonovaya-muzyika-quotzvezda-gitaryiquot-24714.wav"))
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(-1)
+
+music_win = pygame.mixer.Sound(file_path("muzyika-iz-igryi-zelda-23480.wav"))
+
+music_lose = pygame.mixer.Sound(file_path("fonovaya-muzyika-quotproyasneniequot-24769.wav"))
+music_lose.set_volume(1)
+
+
 class GameSprite(pygame.sprite.Sprite):
     def __init__(self, image, x, y, width, height, speed):
         super().__init__()
@@ -126,12 +136,16 @@ while game == True:
             font2 = pygame.font.SysFont("arial", 60, 1)
             txt_lose = font2.render("YOU LOSE", True, DARK_RED)
             window.blit(txt_lose, (250, 200))
+            pygame.mixer.music.stop()
+            music_lose.play()
 
-        if killed_enemies >= 1:
+        if killed_enemies >= 20:
             play = False
             font2 = pygame.font.SysFont("arial", 60, 1)
             txt_win = font2.render("YOU WIN", True, GREEN)
             window.blit(txt_win, (240, 200))
+            pygame.mixer.music.stop()
+            music_win.play()
 
 
     clock.tick(FPS)
